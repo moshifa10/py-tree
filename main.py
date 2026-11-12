@@ -210,7 +210,38 @@ def file_explorer(path: Path):
     print(f"Files: {files}")
     print(f"Entries: {entries}")
 
+
+def activity8(path: Path):
+
+    if not path.exists(): return
+
+    if path.is_dir():
+        print("Yes")
+
+    filesCount = [i for i in path.iterdir() if i.is_file() and i.name != ".git"]
+    folders = [i for i in path.iterdir() if i.is_dir() and i.name != ".git"]
+
+    directories = 0
+    files = 0
+    entries = 0
+
+    entries += (len(folders) + len(filesCount))
+    files+= len(filesCount)
+    directories+= len(folders)
+
+    
+    print(f"Directories: {directories}")
+    print(f"Files: {files}")
+    print(f"Entries: {entries}")
+    
+
+
+
+    
+
 file_explorer(Path.cwd())
+
+activity8(Path("."))
 
 
 
