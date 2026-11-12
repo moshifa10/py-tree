@@ -45,5 +45,23 @@ file4 = Path("documents/report.pdf")
 # print(file3.is_file(), file3.is_dir())
 # print(file4.is_file(), file4.is_dir())
 
+
+
+'''
+
+Activity 3: List directory contents
+Difficulty: Easy
+
+
+Write a program that lists everything inside pathlib-practice/.
+'''
+
+
+curr = Path.cwd()
+save = [j for i in curr.iterdir() if i.name == "documents" for j in i.iterdir()]
+
+
+
+
 # if __name__ == '__main__':
 #     createFilesFolder("documents/report.pdf", "documents/notes.txt", "documents/notes.txt", "images/profile.png", "images/logo.jpg", "projects/project1/main.py", "projects/project2/app.py")
