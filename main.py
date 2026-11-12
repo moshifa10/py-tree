@@ -170,6 +170,55 @@ for f in listOfAllFiles:
 
 
 
+print("\n\n\n\n")
+print("==================== File Explorer =====================")
+print("-"*100)
+
+
+def file_explorer(path: Path):
+
+    directories = 0
+    files = 0
+    entries = 0
+    
+
+    print(f"Directory {path}" )
+
+    filesCount = [i for i in path.iterdir() if i.is_file() and i.name != ".git"]
+    folders = [i for i in path.iterdir() if i.is_dir() and i.name != ".git"]
+
+
+    entries += (len(folders) + len(filesCount))
+    if filesCount : files+= len(filesCount)
+    if folders : directories+= len(folders)
+
+
+
+    start = 0
+    while len(folders) != 0:
+        if (folders[start].is_dir()):
+            curr_folders = [i for i in folders[start].iterdir() if i.is_dir()]
+            if curr_folders : folders.extend(curr_folders)
+            curr_file = [i.name for i in folders[start].iterdir() if i.is_file()]
+            if curr_file : filesCount.extend(curr_file)
+            directories += len(curr_folders)
+            files += len(curr_file)
+            folders.pop(0) 
+
+
+    print(f"Directories: {directories}")
+    print(f"Files: {files}")
+    print(f"Entries: {entries}")
+
+file_explorer(Path.cwd())
+
+
+
+
+
+    
+
+
 
  
 
