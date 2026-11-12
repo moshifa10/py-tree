@@ -131,9 +131,18 @@ while len(folders) != 0:
 for file in files:
     print(file)
 
+files_with_ext = [p for p in Path(".").rglob("*.*") if p.is_file() and  ".git" not in p.parts]
+for i in files_with_ext:
+    print(i.name)
+
+
+new = Path("downloads/documents/example.txt")
+new.parent.mkdir(parents=True, exist_ok=True)
+new.touch(exist_ok=True)
 
 
 
+ 
 
 # if __name__ == '__main__':
 #     createFilesFolder("documents/report.pdf", "documents/notes.txt", "documents/notes.txt", "images/profile.png", "images/logo.jpg", "projects/project1/main.py", "projects/project2/app.py")
