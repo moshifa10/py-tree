@@ -98,5 +98,42 @@ for idx, i in enumerate(globsPY, start=1):
 print(f"Length of py files: {len(globsPY)}")
 
 
+
+'''Activity 5: Recursive file discovery
+Difficulty: Intermediate
+
+
+Find every file inside pathlib-practice/, including files in nested directories.
+
+Expected output:'''
+
+
+files = [i for i in Path(".").iterdir() if i.is_file() and i.name != ".git"]
+folders = [i for i in Path(".").iterdir() if i.is_dir() and i.name != ".git"]
+print(folders)
+print(files)
+
+
+
+start = 0
+while len(folders) != 0:
+    if (folders[start].is_dir()):
+        curr_folders = [i for i in folders[start].iterdir() if i.is_dir()]
+        # print(f"current {curr_folders}")
+        if curr_folders : folders.extend(curr_folders)
+        curr_file = [i.name for i in folders[start].iterdir() if i.is_file()]
+        # print(curr_file)
+        if curr_file : files.extend(curr_file)
+        folders.pop(0)
+
+# print(files)
+
+for file in files:
+    print(file)
+
+
+
+
+
 # if __name__ == '__main__':
 #     createFilesFolder("documents/report.pdf", "documents/notes.txt", "documents/notes.txt", "images/profile.png", "images/logo.jpg", "projects/project1/main.py", "projects/project2/app.py")
