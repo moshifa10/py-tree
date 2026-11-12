@@ -60,7 +60,42 @@ Write a program that lists everything inside pathlib-practice/.
 curr = Path.cwd()
 save = [j for i in curr.iterdir() if i.name == "documents" for j in i.iterdir()]
 
+print(save)
+'''Activity 4: Find files by extension
+Difficulty: Intermediate
 
+
+Find all PDF files inside the documents/ directory.
+
+Then:
+1. Find all .py files inside projects/.
+2. Find all .jpg files inside images/.
+3. Count how many PDF files exist.'''
+
+globsPDF = [i.glob("*.pdf", case_sensitive=False) for i in curr.iterdir() if i.name == "documents" ]
+print("\n\n\nPDF")
+for idx, i in enumerate(globsPDF, start=1):
+    print(f"{idx}. {list(i)[0].name}")
+print(f"Length of the pdf files in documents folder: {len(globsPDF)}" )
+
+
+globsJPG = [i.glob("*.jpg", case_sensitive=False) for i in curr.iterdir() if i.name == "images" ]
+
+print("\n\n\nJPG")
+for idx, i in enumerate(globsJPG, start=1):
+    print(f"{idx}. {list(i)[0].name}")
+
+print(f"Length of jpg: {len(globsJPG)}")
+
+
+globsPY = [j.glob("*.py", case_sensitive=False) for i in curr.iterdir() if i.name == "projects" for j in i.iterdir() ]
+
+print("\n\n\nPYTHON")
+print()
+for idx, i in enumerate(globsPY, start=1):
+    print(f"{idx}. {list(i)[0].name}")
+
+print(f"Length of py files: {len(globsPY)}")
 
 
 # if __name__ == '__main__':
