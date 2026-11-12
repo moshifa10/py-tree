@@ -131,14 +131,43 @@ while len(folders) != 0:
 for file in files:
     print(file)
 
-files_with_ext = [p for p in Path(".").rglob("*.*") if p.is_file() and  ".git" not in p.parts]
-for i in files_with_ext:
-    print(i.name)
+def retrieve_all_files(path:Path):
+    return [p for p in path.rglob("*.*") if p.is_file() and  ".git" not in p.parts]
+
+# for i in retrieve_all_files(Path(".")):
+#     print(i.name)
 
 
-new = Path("downloads/documents/example.txt")
-new.parent.mkdir(parents=True, exist_ok=True)
-new.touch(exist_ok=True)
+# new = Path("downloads/documents/example.txt")
+# new.parent.mkdir(parents=True, exist_ok=True)
+# new.touch(exist_ok=True)
+
+
+'''
+
+Activity 7: File information
+Difficulty: Intermediate
+
+
+Write a program that retrieves information about every file inside pathlib-practice/.
+
+Display:
+- File name.
+- Extension.
+- File size in bytes.
+Example:
+report.pdf | .pdf | 2048 bytes
+notes.txt  | .txt | 512 bytes
+main.py    | .py  | 1024 bytes
+'''
+listOfAllFiles = retrieve_all_files(Path.cwd())
+
+
+print("============ Activity 7 ===============")
+for f in listOfAllFiles:
+    print(f"{f.name}\t|{f.suffix}\t|{f.stat().st_size}")
+
+
 
 
 
