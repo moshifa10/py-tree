@@ -92,44 +92,42 @@ def getFolders(path: Path) -> list[Path]:
     return [i for i in path.iterdir() if i.is_dir() and i.name != ".git" and i.name != "__pycache__"]
 
 def standarlize(paths: dict) -> None : 
-    print(paths)
+    # print(paths)
+    spaces = 2
+    if "ProjectName" in paths: print(f"{emojis.get('folder', '📁')} {paths['ProjectName']}/")
+
+    if "currentDIRFiles" in paths:
+        for file in paths["currentDIRFiles"]:
+            p = Path(file)
+            emote = str(p.suffix).replace(".", "")
+            file_emoji = emojis.get(emote, emojis.get("file", "📄"))
+            print(f"{' ' * spaces}{file_emoji} {file}")
+            
     if "everything" in paths:
         everything = sorted(paths["everything"], key=lambda x: str(x[0]))
-        spaces = 2
-        
-        # 1. Print root project folder
-        if "ProjectName" in paths:
-            print(f"{emojis.get('folder', '📁')} {paths['ProjectName']}/")
-            
-        # 2. Print current directory files at the root level
-        if "currentDIRFiles" in paths:
-            for file in paths["currentDIRFiles"]:
-                p = Path(file)
-                emote = str(p.suffix).replace(".", "")
-                file_emoji = emojis.get(emote, emojis.get("file", "📄"))
-                print(f"{' ' * spaces}{file_emoji} {file}")
+        folder_ids = {item_id for item_id, item in everything if isinstance(item, Path) and item.is_dir()}
 
-        # 3. Print everything with correct indentation based on ID structure
         for item_id, path_item in everything:
             id_str = str(item_id)
-            
-            # Determine indentation level based on ID digits:
-            # - 1 digit = level 1 (e.g., 2 -> downloads)
-            # - 2 digits = level 2 (e.g., 21 -> downloads/documents)
-            # - 3 digits = level 3 (e.g., 211 -> downloads/documents/example.txt)
             level = len(id_str)
-            
-            # Prepare name and emoji/folder icon
             p = Path(path_item) if isinstance(path_item, str) else path_item
             name = p.name if isinstance(path_item, Path) else path_item
-            
-            if isinstance(path_item, Path) and path_item.is_dir():
+            is_folder = isinstance(path_item, Path) and path_item.is_dir()
+
+            if is_folder:
                 folder_emote = emojis.get("folder", "📁")
                 print(f"{' ' * (spaces * level)}{folder_emote} {name}/")
             else:
+                # A file sharing its ID with a folder lives INSIDE that folder
+                if item_id in folder_ids:
+                    level += 1
+
                 emote_key = str(p.suffix).replace(".", "") if isinstance(p, Path) else ""
                 file_emoji = emojis.get(emote_key, emojis.get("file", "📄"))
-                print(f"{' ' * (spaces * level)}{file_emoji} {name}")
+                print(f"{' ' * (spaces * level)} {file_emoji} {name}")
+
+
+    print(f"Successfully presented the tree to your Project {paths['ProjectName']}")
 
 
 '''
@@ -156,10 +154,6 @@ def standarlize(paths: dict) -> None :
     }
 
 '''
-
-
-
-
 
 if __name__ == "__main__":
     d = main(registerArgs())
