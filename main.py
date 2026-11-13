@@ -3,7 +3,7 @@ import argparse
 from emojis import emojis
 import colorama
 from colorama import Fore, Back, Style
-
+import re
 
 colorama.init(autoreset=True)
 
@@ -77,14 +77,14 @@ def getFolders(path: Path) -> list[Path]:
 
 def standarlize(paths: dict, output_file: str = None) -> None : 
     # print(paths)
+    ANSI_PATTERN = re.compile(r"\x1b\[[0-9;]*m")
 
     spaces = 2
     tree_lines = []
 
     def emit(line: str) -> None:
-        print(line)
-        Style.RESET_ALL
-        tree_lines.append(line)
+        print(line + Style.RESET_ALL) 
+        tree_lines.append(ANSI_PATTERN.sub("", line)) 
 
 
     if "ProjectName" in paths: emit(f"{emojis.get('folder', '📁')} {paths['ProjectName']}/")
