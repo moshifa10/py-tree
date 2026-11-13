@@ -70,10 +70,10 @@ def filesNames(pathList: list[Path]) -> list[str]:
     return [file.name for file in pathList]
 
 def getFiles(path: Path) -> list[Path]:
-    return [i.name for i in path.iterdir() if i.is_file() and i.name != ".git" and i.name != "__pycache__"]
+    return [i.name for i in path.iterdir() if i.is_file() and i.name != ".git" and i.name != "__pycache__" and i.name != ".venv"]
 
 def getFolders(path: Path) -> list[Path]:
-    return [i for i in path.iterdir() if i.is_dir() and i.name != ".git" and i.name != "__pycache__"]
+    return [i for i in path.iterdir() if i.is_dir() and i.name != ".git" and i.name != "__pycache__" and i.name != ".venv"]
 
 def standarlize(paths: dict, output_file: str = None) -> None : 
     # print(paths)
@@ -83,6 +83,7 @@ def standarlize(paths: dict, output_file: str = None) -> None :
 
     def emit(line: str) -> None:
         print(line)
+        Style.RESET_ALL
         tree_lines.append(line)
 
 
