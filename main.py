@@ -1,5 +1,6 @@
 from pathlib import Path
 import argparse
+from emojis import emojis
 
 
 
@@ -52,57 +53,52 @@ def main(args : argparse.Namespace) -> dict:
     currentDirFiles = getFiles(path=path)
     folders = getFolders(path=path)
 
-    if currentDirFiles : tree["currenDIRFiles"] = currentDirFiles
-
-    # start = 0
-    # if folders:
-
-    #     while True
-
-    # print(currentDirFiles)
-    # print(folders)
-    print(tree)
-    compute(folders)
-def compute(listFolders : list[Path]) -> list[(int, str)]:
+    if currentDirFiles : tree["currentDIRFiles"] = currentDirFiles
+    results : list[tuple[int, Path]] = compute(folders)
+    tree["everything"] = results
+    return tree
 
 
-    formatted: list[tuple[int, Path]] = []
-    for i, p in enumerate(listFolders, start=1):
-        formatted.append((i,p))
+def standarlize(paths: dict) -> None : 
+    print(paths)
+    spaces = 2
 
-
-    print(formatted)
+    print(f"{emojis["folder"]} {paths["ProjectName"]}/")
+    if "currentDIRFiles" in paths:  
+        for file in paths["currentDIRFiles"]:
+            p = Path(file)
+            emote = str(p.suffix).replace(".", "")
+            if emote in emojis: print(f"{" "*spaces} {emojis[emote]} {file}")
+            else: print(f"{" "*spaces} {emojis[emote]} {file}")
 
 
     
+    
+    
+
+    
+def compute(listFolders : list[Path]) -> list[tuple[int, str]]:
+    formatted: list[tuple[int, Path]] = []
+    for i, p in enumerate(listFolders, start=1):
+        formatted.append((i,p))
     FolderFiles = []
     savePath = []
-
     start = 0
     while (len(formatted) != 0 ):
         currentFiles = []
         currentFolders = []
         if formatted[start][-1].is_dir():
             savePath.append(formatted[start])
-
+            FolderFiles.append(formatted[start])
             if formatted[start][0] > 10:
                 currentFiles.extend([(formatted[start][0]* 10 + i, p) for i, p in enumerate(getFiles(formatted[start][-1]), start=1)])
             else: currentFiles.extend([(formatted[start][0] , i) for i in getFiles(formatted[start][-1])])
-            print(currentFiles)
-
             currentFolders.extend([(formatted[start][0]* 10 + i, p) for i, p in enumerate(getFolders(formatted[start][-1]), start=1)])
-            print(currentFolders)
-
             if currentFiles: FolderFiles.extend(currentFiles)
             if currentFolders :
                 formatted.extend(currentFolders)
-            #     for j in currentFolders:
-            #         savePath.append(j)
-
             formatted.pop(0)
-
-    print(savePath)
-    print(len(savePath))
+    return FolderFiles
 
         
 
@@ -161,5 +157,6 @@ def getFolders(path: Path) -> list[Path]:
 
 
 if __name__ == "__main__":
-    main(registerArgs())
+    d = main(registerArgs())
+    standarlize(d)
 
