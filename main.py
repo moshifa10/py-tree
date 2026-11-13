@@ -38,38 +38,38 @@ def main(args : argparse.Namespace) -> dict:
     tree = {}
     path = Path(args.input) if args.input  else Path.cwd()
 
-    print(path.absolute().name)
-
-    print(Path.cwd().absolute().name)
 
 
     if not path.exists():
         print(f"{args.input} <- this path is not existing Please type existing path")
         return
-    tree["name"] = path.absolute().name
+    if path.is_file():
+        path = Path(path.parent)
+
+    tree["ProjectName"] = path.absolute().name
     if args:
         if args.name:
-            tree['name'] = args.name
+            tree['ProjectName'] = args.name
 
     currentDirFiles = getFiles(path=path)
     folders = getFolders(path=path)
 
+    tree["currenDIRFiles"] = [file.name for file in currentDirFiles]
+
+    # print(currentDirFiles)
+    # print(folders)
+    print(tree)
 
 
-    print(currentDirFiles)
-    print(folders)
+
+
+
+
+
+
+
 
     
-
-
-    
-
-
-
-
-    # folder =
-    print(path)
-
 def getFiles(path: Path) -> list[Path]:
     return [i for i in path.iterdir() if i.is_file() and i.name != ".git"]
 
