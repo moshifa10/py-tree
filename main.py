@@ -18,9 +18,6 @@ def registerArgs():
 def main(args : argparse.Namespace) -> dict: 
     tree = {}
     path = Path(args.input) if args.input  else Path.cwd()
-
-    print(path.absolute())
-
     if not path.exists():
         print(f"{args.input} <- this path is not existing Please type existing path")
         return
@@ -76,19 +73,13 @@ def getFolders(path: Path) -> list[Path]:
     return [i for i in path.iterdir() if i.is_dir() and i.name != ".git" and i.name != "__pycache__" and i.name != ".venv"]
 
 def standarlize(paths: dict, output_file: str = None) -> None : 
-    # print(paths)
     ANSI_PATTERN = re.compile(r"\x1b\[[0-9;]*m")
-
     spaces = 2
     tree_lines = []
-
     def emit(line: str) -> None:
         print(line + Style.RESET_ALL) 
         tree_lines.append(ANSI_PATTERN.sub("", line)) 
-
-
     if "ProjectName" in paths: emit(f"{emojis.get('folder', '📁')} {paths['ProjectName']}/")
-
     if "currentDIRFiles" in paths:
         for file in paths["currentDIRFiles"]:
             p = Path(file)
@@ -111,47 +102,16 @@ def standarlize(paths: dict, output_file: str = None) -> None :
                     folder_emote = emojis.get("folder", "📁")
                     emit(f"{' ' * (spaces * level)}{folder_emote} {Fore.BLUE + name}/")
                 else:
-                    # A file sharing its ID with a folder lives INSIDE that folder
                     if item_id in folder_ids:
                         level += 1
-
                     emote_key = str(p.suffix).replace(".", "") if isinstance(p, Path) else ""
                     file_emoji = emojis.get(emote_key, emojis.get("file", "📄"))
                     emit(f"{' ' * (spaces * level)}{file_emoji} {Fore.GREEN+name}")
-
     if output_file != None and output_file.endswith(".txt"):
         with open(output_file, "w", encoding="utf-8") as f:
             f.write("\n".join(tree_lines) + "\n")
         print(f"\nSaved to {output_file}")
-
-
     print(f"Successfully presented the tree to your Project {paths['ProjectName']}")
-
-
-'''
-    What I can do is to encrypt the folders  and they will represent the structure
-    Second Idea I have decided to go with
-    tree  = {
-        ProjectName : <NAME>,
-        currentDIRFiles: [*<FILE NAMES>],
-        everything: [folder1, app.py1, njabs.pdf1, folder2, index.xml2, folder3 ]
-    }
-    
-    
-    First IDEA
-    1tree = {
-        ProjectName : <NAME>,
-        currentDIRFiles: [*<FILE NAMES>],
-        everything: [
-                {FolderName: <NAME>, files: [<FILE NAMES>], FOLDERS: [Folders]},
-                {},
-                {}
-        
-        ]
-    
-    }
-
-'''
 
 if __name__ == "__main__":
     d = main(registerArgs())
