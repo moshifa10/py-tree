@@ -1,6 +1,11 @@
 from pathlib import Path
 import argparse
 from emojis import emojis
+import colorama
+from colorama import Fore, Back, Style
+
+
+colorama.init(autoreset=True)
 
 def registerArgs():
     parser = argparse.ArgumentParser(description="Welcome to Njabs File tree Managements")
@@ -88,7 +93,7 @@ def standarlize(paths: dict, output_file: str = None) -> None :
             p = Path(file)
             emote = str(p.suffix).replace(".", "")
             file_emoji = emojis.get(emote, emojis.get("file", "📄"))
-            emit(f"{' ' * spaces}{file_emoji} {file}")
+            emit(f"{' ' * spaces}{file_emoji} {Fore.GREEN + file}")
             
         if "everything" in paths:
             everything = sorted(paths["everything"], key=lambda x: str(x[0]))
@@ -103,7 +108,7 @@ def standarlize(paths: dict, output_file: str = None) -> None :
 
                 if is_folder:
                     folder_emote = emojis.get("folder", "📁")
-                    emit(f"{' ' * (spaces * level)}{folder_emote} {name}/")
+                    emit(f"{' ' * (spaces * level)}{folder_emote} {Fore.BLUE + name}/")
                 else:
                     # A file sharing its ID with a folder lives INSIDE that folder
                     if item_id in folder_ids:
@@ -111,7 +116,7 @@ def standarlize(paths: dict, output_file: str = None) -> None :
 
                     emote_key = str(p.suffix).replace(".", "") if isinstance(p, Path) else ""
                     file_emoji = emojis.get(emote_key, emojis.get("file", "📄"))
-                    emit(f"{' ' * (spaces * level)}{file_emoji} {name}")
+                    emit(f"{' ' * (spaces * level)}{file_emoji} {Fore.GREEN+name}")
 
     if output_file != None and output_file.endswith(".txt"):
         with open(output_file, "w", encoding="utf-8") as f:
