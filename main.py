@@ -34,18 +34,30 @@ def registerArgs():
     args = parser.parse_args()
     return None if not args else args
 
-def main(args : argparse.Namespace):
+def main(args : argparse.Namespace) -> dict: 
     tree = {}
     path = Path(args.input) if args.input  else Path.cwd()
+
+    print(path.absolute().name)
+
+    print(Path.cwd().absolute().name)
 
 
     if not path.exists():
         print(f"{args.input} <- this path is not existing Please type existing path")
         return
-
+    tree["name"] = path.absolute().name
     if args:
         if args.name:
             tree['name'] = args.name
+
+    currentDirFiles = getFiles(path=path)
+    folders = getFolders(path=path)
+
+
+
+    print(currentDirFiles)
+    print(folders)
 
     
 
@@ -59,9 +71,9 @@ def main(args : argparse.Namespace):
     print(path)
 
 def getFiles(path: Path) -> list[Path]:
-    return [i for i in path.iterdir() if i.is_dir() and i.name != ".git"]
+    return [i for i in path.iterdir() if i.is_file() and i.name != ".git"]
 
-def getFolder(path: Path) -> list[Path]:
+def getFolders(path: Path) -> list[Path]:
     return [i for i in path.iterdir() if i.is_dir() and i.name != ".git"]
 
     
