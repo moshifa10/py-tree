@@ -2,31 +2,6 @@ from pathlib import Path
 import argparse
 from emojis import emojis
 
-
-
-'''
-    Idea 
-
-    python tree.py --input <Path> 
-
-
-    python tree.py --input .
-
-    py-tree
-        documents
-            reports.pdf
-            invoice/
-                invoices.pdf
-
-    
-                
-    
-
-
-
-'''
-
-
 def registerArgs():
     parser = argparse.ArgumentParser(description="Welcome to Njabs File tree Managements")
     parser.add_argument("-i", "--input", help="The file you want to see the tree")
@@ -38,6 +13,8 @@ def registerArgs():
 def main(args : argparse.Namespace) -> dict: 
     tree = {}
     path = Path(args.input) if args.input  else Path.cwd()
+
+    print(path.absolute())
 
     if not path.exists():
         print(f"{args.input} <- this path is not existing Please type existing path")
@@ -56,6 +33,8 @@ def main(args : argparse.Namespace) -> dict:
     if currentDirFiles : tree["currentDIRFiles"] = currentDirFiles
     results : list[tuple[int, Path]] = compute(folders)
     tree["everything"] = results
+
+    if args.output: return tree, args.output
     return tree
 
 def compute(listFolders : list[Path]) -> list[tuple[int, str]]:
@@ -91,40 +70,53 @@ def getFiles(path: Path) -> list[Path]:
 def getFolders(path: Path) -> list[Path]:
     return [i for i in path.iterdir() if i.is_dir() and i.name != ".git" and i.name != "__pycache__"]
 
-def standarlize(paths: dict) -> None : 
+def standarlize(paths: dict, output_file: str = None) -> None : 
     # print(paths)
+
     spaces = 2
-    if "ProjectName" in paths: print(f"{emojis.get('folder', '📁')} {paths['ProjectName']}/")
+    tree_lines = []
+
+    def emit(line: str) -> None:
+        print(line)
+        tree_lines.append(line)
+
+
+    if "ProjectName" in paths: emit(f"{emojis.get('folder', '📁')} {paths['ProjectName']}/")
 
     if "currentDIRFiles" in paths:
         for file in paths["currentDIRFiles"]:
             p = Path(file)
             emote = str(p.suffix).replace(".", "")
             file_emoji = emojis.get(emote, emojis.get("file", "📄"))
-            print(f"{' ' * spaces}{file_emoji} {file}")
+            emit(f"{' ' * spaces}{file_emoji} {file}")
             
-    if "everything" in paths:
-        everything = sorted(paths["everything"], key=lambda x: str(x[0]))
-        folder_ids = {item_id for item_id, item in everything if isinstance(item, Path) and item.is_dir()}
+        if "everything" in paths:
+            everything = sorted(paths["everything"], key=lambda x: str(x[0]))
+            folder_ids = {item_id for item_id, item in everything if isinstance(item, Path) and item.is_dir()}
 
-        for item_id, path_item in everything:
-            id_str = str(item_id)
-            level = len(id_str)
-            p = Path(path_item) if isinstance(path_item, str) else path_item
-            name = p.name if isinstance(path_item, Path) else path_item
-            is_folder = isinstance(path_item, Path) and path_item.is_dir()
+            for item_id, path_item in everything:
+                id_str = str(item_id)
+                level = len(id_str)
+                p = Path(path_item) if isinstance(path_item, str) else path_item
+                name = p.name if isinstance(path_item, Path) else path_item
+                is_folder = isinstance(path_item, Path) and path_item.is_dir()
 
-            if is_folder:
-                folder_emote = emojis.get("folder", "📁")
-                print(f"{' ' * (spaces * level)}{folder_emote} {name}/")
-            else:
-                # A file sharing its ID with a folder lives INSIDE that folder
-                if item_id in folder_ids:
-                    level += 1
+                if is_folder:
+                    folder_emote = emojis.get("folder", "📁")
+                    emit(f"{' ' * (spaces * level)}{folder_emote} {name}/")
+                else:
+                    # A file sharing its ID with a folder lives INSIDE that folder
+                    if item_id in folder_ids:
+                        level += 1
 
-                emote_key = str(p.suffix).replace(".", "") if isinstance(p, Path) else ""
-                file_emoji = emojis.get(emote_key, emojis.get("file", "📄"))
-                print(f"{' ' * (spaces * level)} {file_emoji} {name}")
+                    emote_key = str(p.suffix).replace(".", "") if isinstance(p, Path) else ""
+                    file_emoji = emojis.get(emote_key, emojis.get("file", "📄"))
+                    emit(f"{' ' * (spaces * level)}{file_emoji} {name}")
+
+    if output_file != None and output_file.endswith(".txt"):
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.write("\n".join(tree_lines) + "\n")
+        print(f"\nSaved to {output_file}")
 
 
     print(f"Successfully presented the tree to your Project {paths['ProjectName']}")
@@ -157,5 +149,6 @@ def standarlize(paths: dict) -> None :
 
 if __name__ == "__main__":
     d = main(registerArgs())
-    standarlize(d)
+    if isinstance(d, tuple): standarlize(d[0],d[-1])
+    else: standarlize(d)
 
