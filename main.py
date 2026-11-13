@@ -58,25 +58,6 @@ def main(args : argparse.Namespace) -> dict:
     tree["everything"] = results
     return tree
 
-
-def standarlize(paths: dict) -> None : 
-    print(paths)
-    spaces = 2
-
-    print(f"{emojis["folder"]} {paths["ProjectName"]}/")
-    if "currentDIRFiles" in paths:  
-        for file in paths["currentDIRFiles"]:
-            p = Path(file)
-            emote = str(p.suffix).replace(".", "")
-            if emote in emojis: print(f"{" "*spaces} {emojis[emote]} {file}")
-            else: print(f"{" "*spaces} {emojis[emote]} {file}")
-
-
-    
-    
-    
-
-    
 def compute(listFolders : list[Path]) -> list[tuple[int, str]]:
     formatted: list[tuple[int, Path]] = []
     for i, p in enumerate(listFolders, start=1):
@@ -100,31 +81,55 @@ def compute(listFolders : list[Path]) -> list[tuple[int, str]]:
             formatted.pop(0)
     return FolderFiles
 
-        
-
-
-
-    
-
-
-
-
-
-
-
 
 def filesNames(pathList: list[Path]) -> list[str]:
     return [file.name for file in pathList]
 
-
 def getFiles(path: Path) -> list[Path]:
-    return [i.name for i in path.iterdir() if i.is_file() and i.name != ".git"]
+    return [i.name for i in path.iterdir() if i.is_file() and i.name != ".git" and i.name != "__pycache__"]
 
 def getFolders(path: Path) -> list[Path]:
-    return [i for i in path.iterdir() if i.is_dir() and i.name != ".git"]
+    return [i for i in path.iterdir() if i.is_dir() and i.name != ".git" and i.name != "__pycache__"]
 
-    
+def standarlize(paths: dict) -> None : 
+    print(paths)
+    if "everything" in paths:
+        everything = sorted(paths["everything"], key=lambda x: str(x[0]))
+        spaces = 2
+        
+        # 1. Print root project folder
+        if "ProjectName" in paths:
+            print(f"{emojis.get('folder', '📁')} {paths['ProjectName']}/")
+            
+        # 2. Print current directory files at the root level
+        if "currentDIRFiles" in paths:
+            for file in paths["currentDIRFiles"]:
+                p = Path(file)
+                emote = str(p.suffix).replace(".", "")
+                file_emoji = emojis.get(emote, emojis.get("file", "📄"))
+                print(f"{' ' * spaces}{file_emoji} {file}")
 
+        # 3. Print everything with correct indentation based on ID structure
+        for item_id, path_item in everything:
+            id_str = str(item_id)
+            
+            # Determine indentation level based on ID digits:
+            # - 1 digit = level 1 (e.g., 2 -> downloads)
+            # - 2 digits = level 2 (e.g., 21 -> downloads/documents)
+            # - 3 digits = level 3 (e.g., 211 -> downloads/documents/example.txt)
+            level = len(id_str)
+            
+            # Prepare name and emoji/folder icon
+            p = Path(path_item) if isinstance(path_item, str) else path_item
+            name = p.name if isinstance(path_item, Path) else path_item
+            
+            if isinstance(path_item, Path) and path_item.is_dir():
+                folder_emote = emojis.get("folder", "📁")
+                print(f"{' ' * (spaces * level)}{folder_emote} {name}/")
+            else:
+                emote_key = str(p.suffix).replace(".", "") if isinstance(p, Path) else ""
+                file_emoji = emojis.get(emote_key, emojis.get("file", "📄"))
+                print(f"{' ' * (spaces * level)}{file_emoji} {name}")
 
 
 '''
